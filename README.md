@@ -32,3 +32,8 @@ ou
 
 .\.venv\Scripts\Activate.ps1
 ```
+
+#### Passo 4 - Instale as dependências:
+```
+pip install -r requirements.txt
+```
