@@ -267,6 +267,18 @@ def mann_whitney_test(df: pd.DataFrame, metric_col: str, group_col: str, group_a
 def kruskal_wallis_test(df: pd.DataFrame, metric_col: str, group_col: str, alpha: float = 0.05) -> dict:
     # Teste de Kruskal-Wallis: compara as medianas de três ou mais grupos (ex: Satisfação por Metodologia)
     groups = [df.loc[df[group_col] == m, metric_col].dropna().values for m in df[group_col].unique()]
+    
+    # Tratamento de exceção para variância nula em todos os grupos combinados
+    all_values = np.concatenate(groups)
+    if len(all_values) == 0 or np.std(all_values) == 0:
+         return {
+             "métrica": metric_col,
+             "agrupador": group_col,
+             "teste": "Kruskal-Wallis",
+             "rejeita_H₀": False,
+             "decisão": "Teste abortado: variância nula nos dados."
+            }
+    
     stat, p = stats.kruskal(*groups)
     rejeita = p <= alpha
 
