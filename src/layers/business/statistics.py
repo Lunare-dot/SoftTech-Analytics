@@ -172,7 +172,6 @@ def confidence_interval_proportion(series: pd.Series, positive_value, confidence
         "nível_confiança": f"{int(confidence * 100)}%",
     }
 
-
 def normality_test(series: pd.Series) -> dict:
     # Testa se uma variável tem formato de curva de sino (Normal), o que decide qual teste usar depois
     s = series.dropna()
@@ -263,6 +262,25 @@ def mann_whitney_test(df: pd.DataFrame, metric_col: str, group_col: str, group_a
         "alpha":         alpha,
         "rejeita_H₀":    rejeita,
         "decisão":       f"Rejeita H₀ — distribuições diferentes (p = {p:.4f})" if rejeita else f"Não rejeita H₀ — sem diferença significativa (p = {p:.4f})",
+    }
+    
+def kruskal_wallis_test(df: pd.DataFrame, metric_col: str, group_col: str, alpha: float = 0.05) -> dict:
+    # Teste de Kruskal-Wallis: compara as medianas de três ou mais grupos (ex: Satisfação por Metodologia)
+    groups = [df.loc[df[group_col] == m, metric_col].dropna().values for m in df[group_col].unique()]
+    stat, p = stats.kruskal(*groups)
+    rejeita = p <= alpha
+
+    return {
+        "métrica":       metric_col,
+        "agrupador":     group_col,
+        "teste":         "Kruskal-Wallis",
+        "H₀":            "As medianas são iguais em todos os grupos",
+        "H₁":            "Ao menos um grupo tem mediana diferente",
+        "estatística_H": round(stat, 4),
+        "p_valor":       round(p, 6),
+        "alpha":         alpha,
+        "rejeita_H₀":    bool(rejeita),
+        "decisão":       f"Rejeita H₀ — diferença significativa (p = {p:.4f})" if rejeita else f"Não rejeita H₀ — sem diferença significativa (p = {p:.4f})",
     }
 
 def chi_square_test(df: pd.DataFrame, col_a: str, col_b: str, alpha: float = 0.05) -> dict:

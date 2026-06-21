@@ -15,6 +15,7 @@ from src.layers.business.statistics import (
     normality_test,
     ttest_two_groups,
     mann_whitney_test,
+    kruskal_wallis_test,
     chi_square_test,
     _interpret_correlation,
     _interpret_cramers_v,
@@ -287,6 +288,57 @@ def test_mann_whitney_detects_difference():
     )
 
     assert result["rejeita_H₀"]
+    
+# ==========================================================
+# kruskal_wallis_test
+# ==========================================================
+
+def test_kruskal_wallis_detects_difference():
+    df = pd.DataFrame({
+        "metodologia":
+            ["A"] * 10 +
+            ["B"] * 10 +
+            ["C"] * 10,
+
+        "valor":
+            list(range(1, 11)) +
+            list(range(50, 60)) +
+            list(range(100, 110))
+    })
+
+    result = kruskal_wallis_test(
+        df,
+        metric_col="valor",
+        group_col="metodologia"
+    )
+
+    assert result["teste"] == "Kruskal-Wallis"
+    assert result["agrupador"] == "metodologia"
+    assert result["rejeita_H₀"] is True
+    assert result["p_valor"] < 0.05
+    
+def test_kruskal_wallis_no_difference():
+    df = pd.DataFrame({
+        "metodologia":
+            ["A"] * 10 +
+            ["B"] * 10 +
+            ["C"] * 10,
+
+        "valor":
+            [10, 11, 9, 10, 11, 10, 9, 10, 11, 10] +
+            [10, 10, 11, 9, 10, 11, 10, 9, 10, 11] +
+            [11, 10, 10, 11, 9, 10, 11, 10, 9, 10]
+    })
+
+    result = kruskal_wallis_test(
+        df,
+        metric_col="valor",
+        group_col="metodologia"
+    )
+
+    assert result["teste"] == "Kruskal-Wallis"
+    assert result["rejeita_H₀"] is False
+    assert result["p_valor"] > 0.05
 
 
 # ==========================================================
