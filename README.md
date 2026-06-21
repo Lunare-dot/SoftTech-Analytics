@@ -8,6 +8,7 @@ Recomenda-se criar um ambiente virtual para instalação das seguintes bibliotec
 - Pandas
 - OpenPyXL
 - SciPy
+- Pytest
 - Matlotib
 - Streamlit
 
