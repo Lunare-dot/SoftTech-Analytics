@@ -123,7 +123,7 @@ def show_dashboard(df):
     # =============================================================================
     with tab4:
         st.markdown("### Investigação de Hipóteses do Negócio")
-        st.write("Análise detalhada cruzando os requisitos do edital (Secção 3.4).")
+        st.write("Análise detalhada cruzando os requisitos do edital (Seção 3.4).")
         
         # Hipótese 1
         with st.expander("H1: Equipes mais experientes produzem menos defeitos?", expanded=False):
@@ -191,10 +191,10 @@ def show_dashboard(df):
         st.markdown("### Ranking Global de Desempenho")
         st.write("Score composto que penaliza bugs/atrasos e bonifica satisfação/entrega no prazo.")
         
-        # Invoca o cálculo do Ranking
+        # Exibe o cálculo do Ranking
         charts.graphCreate_bar_ranking_equipes(df_filtered)
         
-        # Exibe também a tabela pura para os diretores que gostam de ver os números
+        # Exibe também a tabela pura
         st.markdown("#### Detalhamento das Métricas por Equipe")
         df_ranking = analytics.team_performance_ranking(df_filtered)
         st.dataframe(df_ranking.style.background_gradient(cmap='Greens', subset=['score_composto']))
