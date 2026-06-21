@@ -36,7 +36,8 @@ def load_raw_data(filepath: str | Path = DEFAULT_PATH) -> pd.DataFrame:
     return df.dropna(how="all").reset_index(drop=True) 
     # Remove linhas completamente vazias que às vezes o Excel insere no final
     # Retorna a sheet Dados_Brutos como um DataFrame
-    
+
+
 def load_dictionary(filepath: str | Path = DEFAULT_PATH) -> pd.DataFrame:
     # Lê a sheet Dicionario e retorna um DataFrame sem nenhum tratamento
     # Retorna FileNotFound error se o arquivo não existir no caminho informado
