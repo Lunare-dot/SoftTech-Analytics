@@ -4,4 +4,4 @@ scipy
 matplotlib
 streamlit
 pytest
-seaborn
+plotly
