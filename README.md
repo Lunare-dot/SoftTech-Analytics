@@ -11,6 +11,7 @@ Recomenda-se criar um ambiente virtual para instalação das seguintes bibliotec
 - Pytest
 - Matlotib
 - Streamlit
+- Seaborn
 
 ### Passo a passo:
 
