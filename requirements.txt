@@ -3,3 +3,4 @@ openpyxl
 scipy
 matplotlib
 streamlit
+pytest
