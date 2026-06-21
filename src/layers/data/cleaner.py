@@ -176,4 +176,7 @@ def clean(df: pd.DataFrame) -> pd.DataFrame:
     df = encode_ordinals(df)
     df = validate_ranges(df)
     df = derive_columns(df)
+    
+    # Caso futuras etapas removam linhas
+    # Considerar df.reset_index(drop=True) antes do retorno
     return df
