@@ -79,13 +79,15 @@ def show_dashboard(df):
         st.divider()
         
         st.markdown("### Panorama Geral do Portfólio")
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4) # Alterado para 4 colunas para comportar o novo gráfico de prazos
         with c1:
             charts.graphCreate_metodologia(df_filtered)
         with c2:
             charts.graphCreate_porte_projeto(df_filtered)
         with c3:
             charts.graphCreate_equipe(df_filtered)
+        with c4:
+            charts.graphCreate_entregue_no_prazo(df_filtered) # NOVO GRÁFICO ADICIONADO!
 
     # =============================================================================
     # ABA 2: AVALIAÇÃO DESCRITIVA (SEÇÃO 3.2)

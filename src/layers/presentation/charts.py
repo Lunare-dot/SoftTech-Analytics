@@ -144,6 +144,22 @@ def graphCreate_equipe(data):
     )
     fig.update_layout(bargap=0.2, xaxis_title="Equipes", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
+    
+def graphCreate_entregue_no_prazo(data):
+    contagem = data["entregue_no_prazo"].value_counts().reset_index()
+    contagem.columns = ["Status", "Quantidade"]
+    fig = px.pie(
+        contagem,
+        names="Status",
+        values="Quantidade",
+        hole=0.5,
+        title="Proporção de Projetos Entregues no Prazo",
+        color="Status",
+        color_discrete_map={"Sim": "#00CC96", "Não": "#CC3332"}
+    )
+    fig.update_traces(textinfo='percent+label')
+    fig.update_layout(showlegend=True)
+    st.plotly_chart(fig)
 
 # =============================================================================
 # OUTLIERS
