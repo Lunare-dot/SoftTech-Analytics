@@ -1,15 +1,18 @@
-# src/app.py
-# Teste de integração do backend da SoftTech Analytics.
-# Exercita o fluxo completo:
-# loader -> cleaner -> filter -> kpi_engine -> statistics -> analytics
+# src/test_app.py
+
+"""
+Teste de integração completo.
+
+Objetivo:
+- Validar backend
+- Extrair todos os dados usados nos gráficos
+- Gerar saída pronta para o relatório
+"""
+
+from pprint import pprint
 
 from src.layers.data.loader import load_raw_data
 from src.layers.data.cleaner import clean
-
-from src.layers.data.filter import (
-    filter_by_methodology,
-    filter_by_team,
-)
 
 from src.layers.business.kpi_engine import (
     full_kpi_dashboard,
@@ -17,8 +20,11 @@ from src.layers.business.kpi_engine import (
 
 from src.layers.business.statistics import (
     describe_numeric,
+    describe_categorical,
     correlation_matrix,
     normality_test,
+    confidence_interval_mean,
+    confidence_interval_proportion,
 )
 
 from src.layers.business.analytics import (
@@ -32,77 +38,91 @@ from src.layers.business.analytics import (
 )
 
 
+def print_title(title):
+    print("\n" + "=" * 100)
+    print(title)
+    print("=" * 100)
+
+
+def print_sub(title):
+    print("\n" + "-" * 80)
+    print(title)
+    print("-" * 80)
+
+
 def main():
-    print("=" * 80)
-    print("SOFTTECH ANALYTICS - TESTE DE INTEGRAÇÃO")
-    print("=" * 80)
 
-    # ------------------------------------------------------------------
-    # LOADER
-    # ------------------------------------------------------------------
+    print_title("SOFTTECH ANALYTICS - RELATORIO DE INTEGRACAO")
 
-    print("\n[1] Loader")
+    # ==========================================================
+    # LOAD + CLEAN
+    # ==========================================================
 
     raw_df = load_raw_data()
-
-    print(f"Projetos carregados: {len(raw_df)}")
-    print(f"Colunas encontradas: {len(raw_df.columns)}")
-
-    # ------------------------------------------------------------------
-    # CLEANER
-    # ------------------------------------------------------------------
-
-    print("\n[2] Cleaner")
-
     df = clean(raw_df)
 
-    print("Pipeline executado com sucesso.")
-    print(f"Shape final: {df.shape}")
+    print(f"\nProjetos carregados: {len(df)}")
+    print(f"Colunas: {len(df.columns)}")
 
-    # ------------------------------------------------------------------
-    # FILTER
-    # ------------------------------------------------------------------
+    # ==========================================================
+    # PERFIL DO DATASET
+    # ==========================================================
 
-    print("\n[3] Filter")
+    print_title("1. PERFIL DO DATASET")
 
-    agil_df = filter_by_methodology(df, "Ágil")
-    print(f"Projetos Ágeis: {len(agil_df)}")
+    categorias = [
+        "metodologia",
+        "complexidade",
+        "porte_projeto",
+        "equipe",
+        "entregue_no_prazo",
+    ]
 
-    alpha_df = filter_by_team(df, "Alpha")
-    print(f"Projetos da equipe Alpha: {len(alpha_df)}")
+    for col in categorias:
+        print_sub(col.upper())
+        print(describe_categorical(df, col))
 
-    # ------------------------------------------------------------------
-    # KPI ENGINE
-    # ------------------------------------------------------------------
+    # ==========================================================
+    # KPI DASHBOARD
+    # ==========================================================
 
-    print("\n[4] KPI Engine")
+    print_title("2. KPIs")
 
     dashboard = full_kpi_dashboard(df)
 
-    for bloco, valores in dashboard.items():
-        print(f"\n{bloco.upper()}")
-        for chave, valor in valores.items():
-            print(f"  {chave}: {valor}")
+    for bloco, dados in dashboard.items():
 
-    # ------------------------------------------------------------------
-    # STATISTICS
-    # ------------------------------------------------------------------
+        print_sub(bloco.upper())
 
-    print("\n[5] Statistics")
+        for chave, valor in dados.items():
+            print(f"{chave}: {valor}")
 
-    print("\nEstatísticas numéricas:")
+    # ==========================================================
+    # DESCRITIVA
+    # ==========================================================
+
+    print_title("3. ESTATISTICA DESCRITIVA")
+
+    numericas = [
+        "satisfacao_cliente",
+        "atraso_dias",
+        "custo_real_mil",
+        "retrabalho_horas",
+        "horas_extras",
+        "experiencia_media_anos",
+        "bugs_total",
+        "bugs_criticos",
+    ]
+
     print(
         describe_numeric(
             df,
-            [
-                "satisfacao_cliente",
-                "atraso_dias",
-                "custo_real_mil",
-            ],
+            numericas
         )
     )
 
-    print("\nMatriz de correlação:")
+    print_sub("MATRIZ DE CORRELACAO")
+
     print(
         correlation_matrix(
             df,
@@ -110,43 +130,124 @@ def main():
                 "satisfacao_cliente",
                 "atraso_dias",
                 "retrabalho_horas",
+                "horas_extras",
                 "custo_real_mil",
-            ],
+                "bugs_total",
+            ]
         )
     )
 
-    print("\nTeste de normalidade:")
-    print(
-        normality_test(
+    print_sub("TESTES DE NORMALIDADE")
+
+    for col in numericas:
+
+        resultado = normality_test(df[col])
+
+        print(f"\n{col}")
+        pprint(resultado)
+
+    # ==========================================================
+    # H1
+    # ==========================================================
+
+    print_title("4. HIPOTESE H1")
+
+    h1 = experience_vs_bugs(df)
+
+    pprint(h1)
+
+    # ==========================================================
+    # H2
+    # ==========================================================
+
+    print_title("5. HIPOTESE H2")
+
+    h2 = complexity_vs_delay(df)
+
+    pprint(h2)
+
+    # ==========================================================
+    # H3
+    # ==========================================================
+
+    print_title("6. HIPOTESE H3")
+
+    h3 = rework_vs_satisfaction(df)
+
+    pprint(h3)
+
+    # ==========================================================
+    # H4
+    # ==========================================================
+
+    print_title("7. HIPOTESE H4")
+
+    h4 = overtime_vs_deadline(df)
+
+    pprint(h4)
+
+    # ==========================================================
+    # H5
+    # ==========================================================
+
+    print_title("8. HIPOTESE H5")
+
+    h5 = size_vs_cost(df)
+
+    pprint(h5)
+
+    # ==========================================================
+    # H6
+    # ==========================================================
+
+    print_title("9. HIPOTESE H6")
+
+    h6 = methodology_vs_performance(df)
+
+    pprint(h6)
+
+    # ==========================================================
+    # RANKING
+    # ==========================================================
+
+    print_title("10. RANKING DE EQUIPES")
+
+    ranking = team_performance_ranking(df)
+
+    print(ranking)
+    
+    # ==========================================================
+    # INTERVALOS DE CONFIANÇA
+    # ==========================================================
+
+    print_title("11. INTERVALOS DE CONFIANÇA")
+
+    print_sub("SATISFACAO DO CLIENTE")
+
+    pprint(
+        confidence_interval_mean(
             df["satisfacao_cliente"]
         )
     )
 
-    # ------------------------------------------------------------------
-    # ANALYTICS
-    # ------------------------------------------------------------------
+    print_sub("ATRASO DOS PROJETOS")
 
-    print("\n[6] Analytics")
+    pprint(
+        confidence_interval_mean(
+            df["atraso_dias"]
+        )
+    )
 
-    analytics_results = {
-        "experience_vs_bugs": experience_vs_bugs(df),
-        "complexity_vs_delay": complexity_vs_delay(df),
-        "rework_vs_satisfaction": rework_vs_satisfaction(df),
-        "overtime_vs_deadline": overtime_vs_deadline(df),
-        "size_vs_cost": size_vs_cost(df),
-        "methodology_vs_performance": methodology_vs_performance(df),
-    }
+    print_sub("ENTREGA NO PRAZO")
 
-    for nome, resultado in analytics_results.items():
-        print(f"\n✔ {nome}")
-        print(resultado["hipotese"])
-
-    print("\nRanking de equipes:")
-    print(team_performance_ranking(df))
-
-    print("\n" + "=" * 80)
-    print("BACKEND VALIDADO COM SUCESSO")
-    print("=" * 80)
+    pprint(
+        confidence_interval_proportion(
+            df["entregue_no_prazo"],
+            positive_value="Sim"
+        )
+    )
+    
+    print_title("FIM DO TESTE")
 
 
 if __name__ == "__main__":
