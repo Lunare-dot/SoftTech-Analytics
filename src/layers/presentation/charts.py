@@ -1,3 +1,4 @@
+# presentation/charts.py
 import streamlit as st
 import plotly.express as px
 import pandas as pd
@@ -16,19 +17,8 @@ def graphCreate_satisfacao_cliente(data):
         color_discrete_sequence=["#00CC96"]
     )
     
-    # Notas de 0 a 10, agrupadas em blocos de 1 ponto
-    fig.update_traces(xbins=dict(
-        start=0,
-        end=10,
-        size=1
-    ))
-    
-    fig.update_layout(
-        bargap=0.1,
-        xaxis_title="Nota de Satisfação (0 a 10)",
-        yaxis_title="Quantidade de Projetos"
-    )
-    
+    fig.update_traces(xbins=dict(start=0, end=10, size=1))
+    fig.update_layout(bargap=0.1, xaxis_title="Nota de Satisfação (0 a 10)", yaxis_title="Quantidade de Projetos")
     st.plotly_chart(fig)
 
 def graphCreate_atraso_dias(data):
@@ -39,19 +29,8 @@ def graphCreate_atraso_dias(data):
         color_discrete_sequence=["#CC3332"]
     )
     
-    # Atrasos agrupados em ciclos de 15 dias (Sprints)
-    fig.update_traces(xbins=dict(
-        start=-30,
-        end=120,
-        size=15
-    ))
-    
-    fig.update_layout(
-        bargap=0.1,
-        xaxis_title="Atraso (em Dias)",
-        yaxis_title="Quantidade de Projetos"
-    )
-    
+    fig.update_traces(xbins=dict(start=-30, end=120, size=15))
+    fig.update_layout(bargap=0.1, xaxis_title="Atraso (em Dias)", yaxis_title="Quantidade de Projetos")
     st.plotly_chart(fig)
 
 def graphCreate_custo_real_mil(data):
@@ -62,19 +41,8 @@ def graphCreate_custo_real_mil(data):
         color_discrete_sequence=["#2A9D8F"]
     )
     
-    # Custos agrupados em "Tiers" de R$ 25.000,00
-    fig.update_traces(xbins=dict(
-        start=0,
-        end=800,
-        size=25
-    ))
-    
-    fig.update_layout(
-        bargap=0.1,
-        xaxis_title="Custo Real (R$ Mil)",
-        yaxis_title="Quantidade de Projetos"
-    )
-    
+    fig.update_traces(xbins=dict(start=0, end=800, size=25))
+    fig.update_layout(bargap=0.1, xaxis_title="Custo Real (R$ Mil)", yaxis_title="Quantidade de Projetos")
     st.plotly_chart(fig)
 
 def graphCreate_retrabalho_horas(data):
@@ -85,19 +53,8 @@ def graphCreate_retrabalho_horas(data):
         color_discrete_sequence=["#F4A261"]
     )
     
-    # Agrupado de 10 em 10 horas (aprox. 1 dia e pouco de trabalho)
-    fig.update_traces(xbins=dict(
-        start=0,
-        end=430,
-        size=10
-    ))
-    
-    fig.update_layout(
-        bargap=0.1,
-        xaxis_title="Retrabalho (em Horas)",
-        yaxis_title="Quantidade de Projetos"
-    )
-    
+    fig.update_traces(xbins=dict(start=0, end=430, size=10))
+    fig.update_layout(bargap=0.1, xaxis_title="Retrabalho (em Horas)", yaxis_title="Quantidade de Projetos")
     st.plotly_chart(fig)
 
 def graphCreate_bugs_total(data):
@@ -108,29 +65,16 @@ def graphCreate_bugs_total(data):
         color_discrete_sequence=["#5A189A"]
     )
     
-    # Agrupado de 5 em 5 bugs
-    fig.update_traces(xbins=dict(
-        start=0,
-        end=90,
-        size=5
-    ))
-    
-    fig.update_layout(
-        bargap=0.1,
-        xaxis_title="Total de Bugs",
-        yaxis_title="Quantidade de Projetos"
-    )
-    
+    fig.update_traces(xbins=dict(start=0, end=90, size=5))
+    fig.update_layout(bargap=0.1, xaxis_title="Total de Bugs", yaxis_title="Quantidade de Projetos")
     st.plotly_chart(fig)
     
 
 # Barras:
 
 def graphCreate_metodologia(data):
-    # Conta a quantidade de projetos por metodologia
     contagem = data["metodologia"].value_counts().reset_index()
     contagem.columns = ["Metodologia", "Quantidade"]
-
     fig = px.bar(
         contagem,
         x="Metodologia",
@@ -139,20 +83,12 @@ def graphCreate_metodologia(data):
         color="Metodologia",
         color_discrete_sequence=["#118AB2", "#EF476F", "#FFD166"]
     )
-
-    fig.update_layout(
-        bargap=0.2,
-        xaxis_title="Metodologia",
-        yaxis_title="Quantidade de Projetos",
-        showlegend=False
-    )
-
+    fig.update_layout(bargap=0.2, xaxis_title="Metodologia", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
 
 def graphCreate_porte_projeto(data):
     contagem = data["porte_projeto"].value_counts().reset_index()
     contagem.columns = ["Porte", "Quantidade"]
-    
     fig = px.bar(
         contagem,
         x="Porte",
@@ -162,20 +98,12 @@ def graphCreate_porte_projeto(data):
         color_discrete_sequence=["#4383EE", "#54FE69", "#FF473F"],
         category_orders={"Porte": ["Pequeno", "Médio", "Grande"]}
     )
-    
-    fig.update_layout(
-        bargap=0.2,
-        xaxis_title="Porte do Projeto",
-        yaxis_title="Quantidade de Projetos",
-        showlegend=False
-    )
-    
+    fig.update_layout(bargap=0.2, xaxis_title="Porte do Projeto", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
     
 def graphCreate_complexidade(data):
     contagem = data["complexidade"].value_counts().reset_index()
     contagem.columns = ["Complexidade", "Quantidade"]
-    
     fig = px.bar(
         contagem,
         x="Complexidade",
@@ -185,20 +113,12 @@ def graphCreate_complexidade(data):
         color_discrete_sequence=["#4383EE", "#54FE69", "#FF473F", "#5A189A"],
         category_orders={"Complexidade": ["Baixa", "Média", "Alta", "Muito alta"]}
     )
-    
-    fig.update_layout(
-        bargap=0.2,
-        xaxis_title="Complexidade do Projeto",
-        yaxis_title="Quantidade de Projetos",
-        showlegend=False
-    )
-    
+    fig.update_layout(bargap=0.2, xaxis_title="Complexidade do Projeto", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
 
 def graphCreate_setor_cliente(data):
     contagem = data["setor_cliente"].value_counts().reset_index()
     contagem.columns = ["Setor", "Quantidade"]
-    
     fig = px.bar(
         contagem,
         x="Setor",
@@ -207,20 +127,12 @@ def graphCreate_setor_cliente(data):
         color="Setor",
         color_discrete_sequence=["#8A0200", "#FF9E3D", "#00398F", "#007A54", "#C2C2FF", "#41BBD9"],
     )
-    
-    fig.update_layout(
-        bargap=0.2,
-        xaxis_title="Setores", 
-        yaxis_title="Quantidade de Projetos",
-        showlegend=False
-    )
-    
+    fig.update_layout(bargap=0.2, xaxis_title="Setores", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
 
 def graphCreate_equipe(data):
     contagem = data["equipe"].value_counts().reset_index()
     contagem.columns = ["Equipe", "Quantidade"]
-    
     fig = px.bar(
         contagem,
         x="Equipe",
@@ -230,17 +142,9 @@ def graphCreate_equipe(data):
         color_discrete_sequence=["#753578", "#5FC1C3", "#F05D5E", "#1A389A", "#F7B801", "#B22827"],
         category_orders={"Equipe": ["Alpha", "Beta", "Gamma", "Delta", "Sigma", "Omega"]}
     )
-    
-    fig.update_layout(
-        bargap=0.2,
-        xaxis_title="Equipes",
-        yaxis_title="Quantidade de Projetos",
-        showlegend=False
-    )
-    
+    fig.update_layout(bargap=0.2, xaxis_title="Equipes", yaxis_title="Quantidade de Projetos", showlegend=False)
     st.plotly_chart(fig)
 
-#
 # =============================================================================
 # OUTLIERS
 # =============================================================================
@@ -285,7 +189,6 @@ def graphCreate_boxplot_bugs_total(data):
     fig.update_layout(xaxis_title="Total de Bugs")
     st.plotly_chart(fig)
 
-#
 # =============================================================================
 # CORRELAÇÕES
 # =============================================================================
@@ -312,7 +215,6 @@ def graphCreate_heatmap_correlacao(data):
 
 # experience_vs_bugs()
 def graphCreate_scatter_exp_vs_bugs(data):
-    #
     fig = px.scatter(
         data,
         x='experiencia_media_anos',
@@ -320,10 +222,7 @@ def graphCreate_scatter_exp_vs_bugs(data):
         title='Experiencia da Equipe vs Bugs',
         color_discrete_sequence=["#118AB2"]
     )
-    fig.update_layout(
-        xaxis_title="Experiência Média (em anos)",
-        yaxis_title="Total de Bugs"
-    )
+    fig.update_layout(xaxis_title="Experiência Média (em anos)", yaxis_title="Total de Bugs")
     st.plotly_chart(fig)
 
 def graphCreate_bar_exp_faixa(data):
@@ -375,7 +274,7 @@ def graphCreate_bar_taxa_atraso_complexidade(data):
     fig.update_layout(xaxis_title="Complexidade", yaxis_title="Projetos Atrasados (%)")
     st.plotly_chart(fig)
     
-#rework vs satisfaction
+# rework vs satisfaction
 def graphCreate_scatter_rework_vs_satisfaction(data):
     fig = px.scatter(
         data,
@@ -390,7 +289,6 @@ def graphCreate_scatter_rework_vs_satisfaction(data):
 
 def graphCreate_bar_satisfacao_tercil_rework(data):
     df_temp = data.copy()
-    # Divide em 3 grupos exatos pelo volume de retrabalho
     df_temp["tercil_retrabalho"] = pd.qcut(df_temp["retrabalho_horas"], q=3, labels=["Baixo", "Médio", "Alto"])
     contagem = df_temp.groupby("tercil_retrabalho", observed=True)["satisfacao_cliente"].mean().reset_index()
     
@@ -488,7 +386,6 @@ def graphCreate_heatmap_kpis_metodologia(data):
         cols.append("custo_desvio_pct")
     
     df_temp = data.groupby("metodologia")[cols].mean().round(2)
-    
     df_norm = (df_temp - df_temp.min()) / (df_temp.max() - df_temp.min() + 0.0001)
     
     fig = px.imshow(
@@ -499,40 +396,18 @@ def graphCreate_heatmap_kpis_metodologia(data):
     )
     
     fig.update_traces(text=df_temp.values, texttemplate="%{text}")
-    
     st.plotly_chart(fig)
 
 # =============================================================================
-# RANKING DE EQUIPES
+# RANKING DE EQUIPES (Recebe dataframe já calculado do analytics)
 # =============================================================================
 
-def graphCreate_bar_ranking_equipes(data):
-    g = data.groupby("equipe")
-    stats_df = pd.DataFrame({
-        "satisfacao_media":    g["satisfacao_cliente"].mean(),
-        "on_time_%":           g["entregue_no_prazo"].apply(lambda s: (s == "Sim").mean() * 100),
-        "bugs_criticos_media": g["bugs_criticos"].mean(),
-        "atraso_medio":        g["atraso_dias"].mean(),
-    })
-
-    def minmax(s):
-        mn, mx = s.min(), s.max()
-        return (s - mn) / (mx - mn) if mx != mn else pd.Series(0.5, index=s.index)
-
-    # Fórmula: Maior satisfação e maior on_time = bom. Menor bugs e menor atraso = bom (por isso o 1 - x).
-    score = (
-        minmax(stats_df["satisfacao_media"]) + 
-        minmax(stats_df["on_time_%"]) + 
-        (1 - minmax(stats_df["bugs_criticos_media"])) + 
-        (1 - minmax(stats_df["atraso_medio"]))
-    ) / 4
-
-    stats_df["score_composto"] = score.round(3)
-    # Ordena ascendente porque o Plotly constrói as barras horizontais de baixo para cima
-    stats_df = stats_df.reset_index().sort_values("score_composto", ascending=True)
+def graphCreate_bar_ranking_equipes(df_ranking):
+    # Recebe o ranking já calculado e ordenado para desenhar o gráfico
+    df_sorted = df_ranking.reset_index().sort_values("score_composto", ascending=True)
     
     fig = px.bar(
-        stats_df, 
+        df_sorted, 
         y="equipe", 
         x="score_composto", 
         orientation="h",
@@ -543,6 +418,6 @@ def graphCreate_bar_ranking_equipes(data):
     )
     
     fig.update_traces(textposition='auto')
-    fig.update_layout(xaxis_title="Score de Qualidade (0 a 1)", yaxis_title="Equipas")
+    fig.update_layout(xaxis_title="Score de Qualidade (0 a 1)", yaxis_title="Equipes")
     
     st.plotly_chart(fig)

@@ -1,6 +1,7 @@
+# presentation/dashboard.py
 import streamlit as st
 from src.layers.data import filter
-from src.layers.business import kpi_engine, analytics
+from src.layers.business import kpi_engine, analytics, statistics
 import src.layers.presentation.charts as charts
 
 def show_dashboard(df):
@@ -42,10 +43,12 @@ def show_dashboard(df):
     # =============================================================================
     st.title("📊 SoftTech Analytics - Desempenho de Projetos")
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    # NOVA ABA ADICIONADA PARA CUMPRIR A SEÇÃO 3.5 DO EDITAL (Intervalos de Confiança)
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
         "📈 Visão Geral & KPIs", 
         "🎯 Avaliação Descritiva",
         "🔍 Outliers & Correlações", 
+        "📏 Intervalos de Confiança",
         "🧪 Teste de Hipóteses", 
         "🏆 Ranking de Equipes"
     ])
@@ -109,7 +112,7 @@ def show_dashboard(df):
         charts.graphCreate_heatmap_correlacao(df_filtered)
         
         st.divider()
-        st.markdown("### Deteção de Anomalias (Outliers)")
+        st.markdown("### Detecção de Anomalias (Outliers)")
         c1, c2 = st.columns(2)
         with c1:
             charts.graphCreate_boxplot_atraso_dias(df_filtered)
@@ -119,11 +122,35 @@ def show_dashboard(df):
             charts.graphCreate_boxplot_bugs_total(df_filtered)
 
     # =============================================================================
-    # ABA 4: TESTE DE HIPÓTESES (SEÇÃO 3.4)
+    # ABA 4: INTERVALOS DE CONFIANÇA (SEÇÃO 3.5 DO EDITAL)
     # =============================================================================
     with tab4:
+        st.markdown("### Inferência Estatística: Intervalos de Confiança (95%)")
+        st.write("Estimação dos verdadeiros parâmetros populacionais da SoftTech com base na amostra de projetos concluídos.")
+        
+        col_ic1, col_ic2 = st.columns(2)
+        
+        with col_ic1:
+            st.markdown("#### 1. Média de Satisfação do Cliente")
+            ic_sat = statistics.confidence_interval_mean(df_filtered["satisfacao_cliente"])
+            st.info(f"**Média Amostral:** {ic_sat['média']}\n\n"
+                    f"**Margem de Erro:** ± {ic_sat['margem_erro']}\n\n"
+                    f"**Intervalo Estimado:** [ {ic_sat['ic_inferior']} a {ic_sat['ic_superior']} ]")
+            st.caption("Temos 95% de confiança de que a verdadeira nota média populacional de satisfação dos clientes encontra-se neste intervalo.")
+            
+        with col_ic2:
+            st.markdown("#### 2. Proporção de Entregas no Prazo")
+            ic_prazo = statistics.confidence_interval_proportion(df_filtered["entregue_no_prazo"], positive_value="Sim")
+            st.success(f"**Proporção Amostral:** {ic_prazo['proporção_%']}%\n\n"
+                       f"**Intervalo Estimado:** [ {ic_prazo['ic_inferior']*100:.2f}% a {ic_prazo['ic_superior']*100:.2f}% ]")
+            st.caption("Estima-se com 95% de confiança que a taxa global de pontualidade da empresa nos projetos reais varia dentro dessa faixa percentual.")
+
+    # =============================================================================
+    # ABA 5: TESTE DE HIPÓTESES (SEÇÃO 3.4 e 3.6)
+    # =============================================================================
+    with tab5:
         st.markdown("### Investigação de Hipóteses do Negócio")
-        st.write("Análise detalhada cruzando os requisitos do edital (Seção 3.4).")
+        st.write("Análise detalhada cruzando os requisitos do edital (Seções 3.4 e 3.6). Nível de significância (α) = 0.05.")
         
         # Hipótese 1
         with st.expander("H1: Equipes mais experientes produzem menos defeitos?", expanded=False):
@@ -185,16 +212,18 @@ def show_dashboard(df):
             charts.graphCreate_heatmap_kpis_metodologia(df_filtered)
 
     # =============================================================================
-    # ABA 5: RANKING DE EQUIPES
+    # ABA 6: RANKING DE EQUIPES (SEÇÃO 3.7)
     # =============================================================================
-    with tab5:
+    with tab6:
         st.markdown("### Ranking Global de Desempenho")
         st.write("Score composto que penaliza bugs/atrasos e bonifica satisfação/entrega no prazo.")
         
-        # Exibe o cálculo do Ranking
-        charts.graphCreate_bar_ranking_equipes(df_filtered)
-        
-        # Exibe também a tabela pura
-        st.markdown("#### Detalhamento das Métricas por Equipe")
+        # Recupera o dataframe de ranking diretamente do Analytics para manter a arquitetura limpa
         df_ranking = analytics.team_performance_ranking(df_filtered)
+        
+        # Exibe o Gráfico
+        charts.graphCreate_bar_ranking_equipes(df_ranking)
+        
+        # Exibe a tabela detalhada
+        st.markdown("#### Detalhamento das Métricas por Equipe")
         st.dataframe(df_ranking.style.background_gradient(cmap='Greens', subset=['score_composto']))
